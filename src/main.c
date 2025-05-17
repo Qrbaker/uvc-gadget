@@ -10,8 +10,8 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <wiringPi.h>
 
+#include "bcm2835.h"
 #include "config.h"
 #include "configfs.h"
 #include "events.h"
@@ -56,36 +56,24 @@ static void usage(const char *argv0)
 
 static void streaming_status_enable()
 {
-    // initalize GPIO registers
-    wiringPiSetupGpio();
-
-    // set Pin 21 to OUTPUT mode
-    pinMode(21, OUTPUT);
-
-    // set to pull none
-    pullUpDnControl(21, PUD_OFF);
-
-    // set pin 21 HIGH
-    digitalWrite(21, HIGH);
+    // Set pin as output
+	bcm2835_gpio_fsel(RPI_GPIO_P1_21, BCM2835_GPIO_FSEL_OUTP);
+	// Set pin HIGH
+	bcm2835_gpio_write(pin, HIGH);
 }
 
 void streaming_status_disable()
 {
-        // initalize GPIO registers
-    wiringPiSetupGpio();
-
-    // set Pin 21 to OUTPUT mode
-    pinMode(21, OUTPUT);
-
-    // set to pull none
-    pullUpDnControl(21, PUD_OFF);
-
-    // set pin 21 LOW
-    digitalWrite(21, LOW);
+    // Set pin as output
+	bcm2835_gpio_fsel(RPI_GPIO_P1_21, BCM2835_GPIO_FSEL_OUTP);
+	// Set pin LOW
+	bcm2835_gpio_write(pin, LOW);
 }
 
 /* Necessary for and only used by signal handler. */
 static struct events *sigint_events;
+
+int bcm_init = 0;
 
 static void sigint_handler(int signal __attribute__((unused)))
 {
@@ -198,7 +186,12 @@ int main(int argc, char *argv[])
 		goto done;
 	}
 
-	streaming_status_enable();
+	if (bcm2835_init())
+	{
+		bcm_init = 1;
+		streaming_status_enable();
+	}
+
 	uvc_stream_set_event_handler(stream, &events);
 	uvc_stream_set_video_source(stream, src);
 	uvc_stream_init_uvc(stream, fc);
@@ -212,7 +205,11 @@ done:
 	video_source_destroy(src);
 	events_cleanup(&events);
 	configfs_free_uvc_function(fc);
-	streaming_status_disable();
+	
+	if (bcm_init) {
+		streaming_status_disable();
+		bcm2835_close();
+	}	
 
 	return ret;
 }
