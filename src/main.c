@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <wiringPi.h>
 
 #include "config.h"
 #include "configfs.h"
@@ -54,10 +55,34 @@ static void usage(const char *argv0)
 	fprintf(stderr, "    %s musb-hdrc.0.auto\n", argv0);
 }
 
-static void streaming_status_enable(char *pin)
+static void streaming_status_enable()
 {
-	int ret;
-	
+    // initalize GPIO registers
+    wiringPiSetupGpio();
+
+    // set Pin 21 to OUTPUT mode
+    pinMode(21, OUTPUT);
+
+    // set to pull none
+    pullUpDnControl(21, PUD_OFF);
+
+    // set pin 21 HIGH
+    digitalWrite(21, HIGH);
+}
+
+void streaming_status_disable()
+{
+        // initalize GPIO registers
+    wiringPiSetupGpio();
+
+    // set Pin 21 to OUTPUT mode
+    pinMode(21, OUTPUT);
+
+    // set to pull none
+    pullUpDnControl(21, PUD_OFF);
+
+    // set pin 21 LOW
+    digitalWrite(21, LOW);
 }
 
 /* Necessary for and only used by signal handler. */
