@@ -57,17 +57,17 @@ static void usage(const char *argv0)
 static void streaming_status_enable()
 {
     // Set pin as output
-	bcm2835_gpio_fsel(RPI_GPIO_P1_21, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
 	// Set pin HIGH
-	bcm2835_gpio_write(RPI_GPIO_P1_21, HIGH);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, HIGH);
 }
 
 void streaming_status_disable()
 {
     // Set pin as output
-	bcm2835_gpio_fsel(RPI_GPIO_P1_21, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
 	// Set pin LOW
-	bcm2835_gpio_write(RPI_GPIO_P1_21, LOW);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, LOW);
 }
 
 /* Necessary for and only used by signal handler. */
