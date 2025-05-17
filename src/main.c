@@ -21,7 +21,6 @@
 #include "test-source.h"
 #include "jpg-source.h"
 #include "slideshow-source.h"
-#include "gpio.h"
 
 static void usage(const char *argv0)
 {
