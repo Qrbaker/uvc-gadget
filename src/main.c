@@ -20,6 +20,7 @@
 #include "test-source.h"
 #include "jpg-source.h"
 #include "slideshow-source.h"
+#include "gpio.h"
 
 static void usage(const char *argv0)
 {
@@ -29,9 +30,9 @@ static void usage(const char *argv0)
 	fprintf(stderr, " -c <index|id> libcamera camera name\n");
 #endif
 	fprintf(stderr, " -d device	V4L2 source device\n");
-	fprintf(stderr, " -i image	MJPEG image\n");
+	fprintf(stderr, " -i image		MJPEG image\n");
 	fprintf(stderr, " -s directory	directory of slideshow images\n");
-	fprintf(stderr, " -h		Print this help screen and exit\n");
+	fprintf(stderr, " -h			Print this help screen and exit\n");
 	fprintf(stderr, "\n");
 	fprintf(stderr, " <uvc device>	UVC device instance specifier\n");
 	fprintf(stderr, "\n");
@@ -53,6 +54,12 @@ static void usage(const char *argv0)
 	fprintf(stderr, "    %s musb-hdrc.0.auto\n", argv0);
 }
 
+static void streaming_status_enable(char *pin)
+{
+	int ret;
+	
+}
+
 /* Necessary for and only used by signal handler. */
 static struct events *sigint_events;
 
@@ -71,6 +78,7 @@ int main(int argc, char *argv[])
 	char *cap_device = NULL;
 	char *img_path = NULL;
 	char *slideshow_dir = NULL;
+	char *status_pin = NULL;
 
 	struct uvc_function_config *fc;
 	struct uvc_stream *stream = NULL;
@@ -79,7 +87,7 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	int opt;
 
-	while ((opt = getopt(argc, argv, "c:d:i:s:k:h")) != -1) {
+	while ((opt = getopt(argc, argv, "c:d:i:s:p:k:h")) != -1) {
 		switch (opt) {
 #ifdef HAVE_LIBCAMERA
 		case 'c':
@@ -167,6 +175,7 @@ int main(int argc, char *argv[])
 		goto done;
 	}
 
+	streaming_status_enable();
 	uvc_stream_set_event_handler(stream, &events);
 	uvc_stream_set_video_source(stream, src);
 	uvc_stream_init_uvc(stream, fc);
@@ -180,6 +189,7 @@ done:
 	video_source_destroy(src);
 	events_cleanup(&events);
 	configfs_free_uvc_function(fc);
+	streaming_status_disable();
 
 	return ret;
 }
