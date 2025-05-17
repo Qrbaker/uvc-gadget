@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
 	char *cap_device = NULL;
 	char *img_path = NULL;
 	char *slideshow_dir = NULL;
-	char *status_pin = NULL;
 
 	struct uvc_function_config *fc;
 	struct uvc_stream *stream = NULL;
