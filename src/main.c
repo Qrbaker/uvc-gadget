@@ -15,6 +15,7 @@
 #include "configfs.h"
 #include "events.h"
 #include "stream.h"
+#include "bcm2835.h"
 #include "libcamera-source.h"
 #include "v4l2-source.h"
 #include "test-source.h"
