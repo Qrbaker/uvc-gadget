@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "bcm2835.h"
 #include "config.h"
 #include "configfs.h"
 #include "events.h"
@@ -52,22 +51,6 @@ static void usage(const char *argv0)
 	fprintf(stderr, "    %s g1/functions/uvc.1\n", argv0);
 	fprintf(stderr, "\n");
 	fprintf(stderr, "    %s musb-hdrc.0.auto\n", argv0);
-}
-
-static void streaming_status_enable()
-{
-    // Set pin as output
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
-	// Set pin HIGH
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, HIGH);
-}
-
-void streaming_status_disable()
-{
-    // Set pin as output
-	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
-	// Set pin LOW
-	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, LOW);
 }
 
 /* Necessary for and only used by signal handler. */
@@ -189,7 +172,6 @@ int main(int argc, char *argv[])
 	if (bcm2835_init())
 	{
 		bcm_init = 1;
-		streaming_status_enable();
 	}
 
 	uvc_stream_set_event_handler(stream, &events);
@@ -207,7 +189,6 @@ done:
 	configfs_free_uvc_function(fc);
 	
 	if (bcm_init) {
-		streaming_status_disable();
 		bcm2835_close();
 	}	
 

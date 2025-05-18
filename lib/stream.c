@@ -14,6 +14,7 @@
 
 #include "events.h"
 #include "stream.h"
+#include "bcm2835.h"
 #include "uvc.h"
 #include "v4l2.h"
 #include "video-buffers.h"
@@ -238,6 +239,9 @@ static int uvc_stream_start(struct uvc_stream *stream)
 {
 	printf("Starting video stream.\n");
 
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, HIGH);
+
 	switch (stream->src->type) {
 	case VIDEO_SOURCE_DMABUF:
 		video_source_set_buffer_handler(stream->src, uvc_stream_source_process,
@@ -271,6 +275,9 @@ static int uvc_stream_stop(struct uvc_stream *stream)
 	v4l2_free_buffers(sink);
 	video_source_free_buffers(stream->src);
 
+	bcm2835_gpio_fsel(RPI_V2_GPIO_P1_40, BCM2835_GPIO_FSEL_OUTP);
+	bcm2835_gpio_write(RPI_V2_GPIO_P1_40, HIGH);
+	
 	return 0;
 }
 
